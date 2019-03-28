@@ -80,13 +80,12 @@ def exercise1a():
                            muscle_length=muscle_stretch)
 
     # Plotting
-    plt.figure('Isotonic muscle experiment')
-    plt.plot(result.time, result.v_ce)
-    plt.title('Isotonic muscle experiment')
+    plt.figure('Isometric muscle experiment')
+    plt.plot(result.time, result.tendon_force)
+    plt.title('Isometric muscle experiment')
     plt.xlabel('Time [s]')
-    plt.ylabel('Muscle contractilve velocity')
+    plt.ylabel('Muscle Force')
     plt.grid()
-
 
 def exercise1d():
     """ Exercise 1d
@@ -152,13 +151,13 @@ def exercise1d():
                            time_stabilize=time_stabilize,
                            stimulation=muscle_stimulation,
                            load=load)
-
+    
     # Plotting
-    plt.figure('Isometric muscle experiment')
-    plt.plot(result.time, result.tendon_force)
-    plt.title('Isometric muscle experiment')
+    plt.figure('Isotonic muscle experiment')
+    plt.plot(result.time, result.v_ce)
+    plt.title('Isotonic muscle experiment')
     plt.xlabel('Time [s]')
-    plt.ylabel('Muscle Force')
+    plt.ylabel('Muscle contractilve velocity')
     plt.grid()
 
 
