@@ -91,11 +91,11 @@ def exercise2():
     sys.add_muscle_system(muscles)  # Add the muscle model to the system
 
     ##### Time #####
-    t_max = 2.5  # Maximum simulation time
-    time = np.arange(0., t_max, 0.001)  # Time vector
+    t_max = 3  # Maximum simulation time
+    time = np.arange(0., t_max, 0.004)  # Time vector
 
     ##### Model Initial Conditions #####
-    x0_P = np.array([np.pi/4, 0.])  # Pendulum initial condition
+    x0_P = np.array([0., 0.])  # Pendulum initial condition
 
     # Muscle Model initial condition
     x0_M = np.array([0., M1.L_OPT, 0., M2.L_OPT])
@@ -112,49 +112,89 @@ def exercise2():
     # Add muscle activations to the simulation
     # Here you can define your muscle activation vectors
     # that are time dependent
-
-    act1 = np.ones((len(time), 1)) * 1.
-    act2 = np.ones((len(time), 1)) * 0.05
+    '''
+    #act1 = np.ones((len(time), 1)) * 1.
+    #act2 = np.ones((len(time), 1)) * 0.05
+    act1 = (np.sin((time/t_max)*10*np.pi)+1)/2
+    act2 = (np.sin((time/t_max)*10*np.pi + np.pi)+1)/2
+    
+    act1 = np.reshape(act1, (len(time),1)) 
+    act2 = np.reshape(act2, (len(time),1)) 
 
     activations = np.hstack((act1, act2))
 
+    # Plotting the results
+    plt.figure('Activations')
+    plt.title('Muscle activations')
+    plt.plot(time, act1, label = 'Activation muscle 1')
+    plt.plot(time, act2, label = 'Activation muscle 2')
+    plt.xlabel('Time [s]')
+    plt.ylabel('Activation')
+    plt.legend()
+    plt.grid()
     # Method to add the muscle activations to the simulation
 
     sim.add_muscle_activations(activations)
-
+    '''
+    max_amplitude = np.zeros([10,10])
+    i = 0
+    j = 0
     # Simulate the system for given time
-
-    sim.initalize_system(x0, time)  # Initialize the system state
-
-    #: If you would like to perturb the pedulum model then you could do
-    # so by
-    sim.sys.pendulum_sys.parameters.PERTURBATION = True
-    # The above line sets the state of the pendulum model to zeros between
-    # time interval 1.2 < t < 1.25. You can change this and the type of
-    # perturbation in
-    # pendulum_system.py::pendulum_system function
-
-    # Integrate the system for the above initialized state and time
-    sim.simulate()
-
-    # Obtain the states of the system after integration
-    # res is np.array [time, states]
-    # states vector is in the same order as x0
-    res = sim.results()
-
-    # In order to obtain internal states of the muscle
-    # you can access the results attribute in the muscle class
-    muscle1_results = sim.sys.muscle_sys.Muscle1.results
-    muscle2_results = sim.sys.muscle_sys.Muscle2.results
-
-    # Plotting the results
-    plt.figure('Pendulum')
-    plt.title('Pendulum Phase')
-    plt.plot(res[:, 1], res[:, 2])
-    plt.xlabel('Position [rad]')
-    plt.ylabel('Velocity [rad.s]')
-    plt.grid()
-
+    for activation_max in np.arange(0, 1, 0.3):
+        i = 0
+        for frequency in np.arange(1, 30, 4):
+            act1 = ((np.sin((time/t_max)*frequency*np.pi)+1)/2)*activation_max
+            act2 = ((np.sin((time/t_max)*frequency*np.pi + np.pi)+1)/2)*activation_max
+            
+            act1 = np.reshape(act1, (len(time),1)) 
+            act2 = np.reshape(act2, (len(time),1)) 
+        
+            activations = np.hstack((act1, act2))    
+            sim.add_muscle_activations(activations)
+            
+            sim.initalize_system(x0, time)  # Initialize the system state
+            
+            #: If you would like to perturb the pedulum model then you could do
+            # so by
+            sim.sys.pendulum_sys.parameters.PERTURBATION = False
+            # The above line sets the state of the pendulum model to zeros between
+            # time interval 1.2 < t < 1.25. You can change this and the type of
+            # perturbation in
+            # pendulum_system.py::pendulum_system function
+        
+            # Integrate the system for the above initialized state and time
+            sim.simulate()
+        
+            # Obtain the states of the system after integration
+            # res is np.array [time, states]
+            # states vector is in the same order as x0
+            res = sim.results()
+            # In order to obtain internal states of the muscle
+            # you can access the results attribute in the muscle class
+            muscle1_results = sim.sys.muscle_sys.Muscle1.results
+            muscle2_results = sim.sys.muscle_sys.Muscle2.results
+            
+            max_amplitude[i,j] = np.max(np.abs(res[:,1]))
+            i+=1
+            
+            # Plotting the results
+            plt.figure('Pendulum')
+            plt.title('Pendulum Phase')
+            plt.plot(res[:, 1], res[:, 2], label = 'activation %.2f - frequency %f' %(activation_max ,frequency))
+            plt.xlabel('Position [rad]')
+            plt.ylabel('Velocity [rad.s]')
+            plt.grid()
+        j+=1
+        
+    plt.figure('Amplitude')
+    fig, ax1 = plt.subplots(1,1)
+    ax1.set_xticklabels(np.array([0, 0, 0.2, 0.4, 0.8, 1]))
+    ax1.set_yticklabels(np.array([0, 1, 3, 5, 7, 9]))
+    plt.title('Ampliudes')
+    plt.imshow(max_amplitude, aspect = 'equal', origin = 'lower')
+    
+    plt.xlabel('Activation')
+    plt.ylabel('Frequncy')
     # To animate the model, use the SystemAnimation class
     # Pass the res(states) and systems you wish to animate
     simulation = SystemAnimation(res, pendulum, muscles)

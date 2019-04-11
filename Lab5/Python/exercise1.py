@@ -72,6 +72,29 @@ def exercise1a():
 
     time = np.arange(t_start, t_stop, time_step)
 
+        ####custom code#####
+    
+    fiber_length = np.arange(0.01,0.11,0.01)
+    my_velocity = []
+    plt.figure('Isotonic muscle experiment')
+    for lopt in fiber_length:
+    # Run the integration
+        sys.muscle.L_OPT = lopt
+        result = sys.integrate(x0=x0,
+                               time=time,
+                               time_step=time_step,
+                               stimulation=muscle_stimulation,
+                               muscle_length=muscle_stretch
+                               )
+        
+        plt.figure('Isometric muscle experiment')
+        plt.plot(result.time, result.tendon_force, label = 'fiber length: %.2f' %lopt)
+        plt.title('Isometric muscle experiment')
+        plt.xlabel('Time [s]')
+        plt.ylabel('Muscle Force')
+        plt.legend()
+        
+
     # Run the integration
     result = sys.integrate(x0=x0,
                            time=time,
@@ -121,9 +144,9 @@ def exercise1d():
 
     # You can still access the muscle inside the system by doing
     # >>> sys.muscle.L_OPT # To get the muscle optimal length
-
+    
     # Evalute for a single load
-    load = 100.
+    #load = 15.
 
     # Evalute for a single muscle stimulation
     muscle_stimulation = 1.
@@ -138,32 +161,53 @@ def exercise1d():
 
     # Set the time for integration
     t_start = 0.0
-    t_stop = 0.3
+    t_stop = 0.35
     time_step = 0.001
     time_stabilize = 0.2
 
     time = np.arange(t_start, t_stop, time_step)
-
+    
+    ####custom code#####
+    
+    load_range = np.arange(1,361,5)
+    my_velocity = []
+    plt.figure('Isotonic muscle experiment')
+    for load in load_range:
     # Run the integration
-    result = sys.integrate(x0=x0,
-                           time=time,
-                           time_step=time_step,
-                           time_stabilize=time_stabilize,
-                           stimulation=muscle_stimulation,
-                           load=load)
+        result = sys.integrate(x0=x0,
+                               time=time,
+                               time_step=time_step,
+                               time_stabilize=time_stabilize,
+                               stimulation=muscle_stimulation,
+                               load=load)
+        
+        my_velocity.append(max(abs(result.v_ce))) 
+        
+        i, = np.where(result.v_ce == my_velocity[-1])
+        if i.shape == (0,):#checks for negative velocity
+            my_velocity[-1] *= -1
+            
+        plt.plot(result.time, result.v_ce, label = 'Load: %s' %load)
+        
+        
     
     # Plotting
-    plt.figure('Isotonic muscle experiment')
-    plt.plot(result.time, result.v_ce)
+    
+    #plt.plot(result.time, result.v_ce)
     plt.title('Isotonic muscle experiment')
     plt.xlabel('Time [s]')
     plt.ylabel('Muscle contractilve velocity')
     plt.grid()
-
+    
+    plt.figure('Isotonic Experiment')
+    plt.plot(load_range,my_velocity)
+    plt.xlabel('Load[Kg]')
+    plt.ylabel('Maximal Muscle Contractile Velocity[m/s]')
+    plt.grid()
 
 def exercise1():
     exercise1a()
-    exercise1d()
+    #exercise1d()
 
     if DEFAULT["save_figures"] is False:
         plt.show()

@@ -8,8 +8,8 @@ def main():
     """Main function that runs all the exercises."""
     pylog.info('Implementing Lab 6 : Exercise 2')
     exercise2()
-    pylog.info('Implementing Lab 6 : Exercise 3')
-    exercise3()
+    #pylog.info('Implementing Lab 6 : Exercise 3')
+    #exercise3()
     return
 
 

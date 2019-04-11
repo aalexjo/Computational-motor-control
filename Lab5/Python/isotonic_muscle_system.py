@@ -186,7 +186,7 @@ class IsotonicMuscleSystem(object):
 
         #: Integration
         pylog.info(
-            "Begin isometric test with load {} and "
+            "Begin isotonic test with load {} and "
             "muscle activation {}".format(load, stimulation))
         #: Instatiate the muscle results container
         self.muscle.instantiate_result_from_state(time)
