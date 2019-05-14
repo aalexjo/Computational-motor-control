@@ -12,9 +12,9 @@ def exercise_example(world, timestep, reset):
     parameter_set = [
         SimulationParameters(
             simulation_duration=10,
-            drive=drive,
-            amplitudes=[1, 2, 3],
-            phase_lag=np.zeros(n_joints),
+            #drive=drive,
+            amplitudes=0.8,
+            freqs = 8,
             turn=0,
         )
         for drive in np.linspace(1, 2, 2)

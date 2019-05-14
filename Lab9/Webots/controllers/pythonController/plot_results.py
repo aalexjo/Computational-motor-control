@@ -73,13 +73,12 @@ def plot_2d(results, labels, n_data=300, log=False, cmap=None):
     cbar.set_label(labels[2])
 
 
-def main(plot=True):
+def main(path, plot=True):
     """Main"""
     # Load data
-    with np.load('logs/example/simulation_0.npz') as data:
+    with np.load(path) as data:
         timestep = float(data["timestep"])
         amplitude = data["amplitudes"]
-        phase_lag = data["phase_lag"]
         link_data = data["links"][:, 0, :]
         joints_data = data["joints"]
     times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
@@ -88,6 +87,8 @@ def main(plot=True):
     plt.figure("Positions")
     plot_positions(times, link_data)
 
+    plt.figure("Trajectory")
+    plot_trajectory(link_data)
     # Show plots
     if plot:
         plt.show()

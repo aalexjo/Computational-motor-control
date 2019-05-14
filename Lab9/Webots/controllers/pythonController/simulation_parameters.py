@@ -15,7 +15,14 @@ class SimulationParameters(dict):
         self.simulation_duration = 30
         self.phase_lag = None
         self.amplitude_gradient = None
-
+        
+        
+        self.freqs = 5  # f_i
+        self.coupling_weight = 10  # w_ij
+        self.phase_bias_vertical = 2*np.pi/8  # theta_i
+        self.phase_bias_lateral = np.pi
+        self.amplitudes_rate = 20  # a_i
+        self.nominal_amplitudes = 0.5  # R_i
         # Feel free to add more parameters (ex: MLR drive)
         # self.drive_mlr = ...
         # ...
