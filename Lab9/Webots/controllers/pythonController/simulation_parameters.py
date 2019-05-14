@@ -23,6 +23,8 @@ class SimulationParameters(dict):
         self.phase_bias_lateral = np.pi
         self.amplitudes_rate = 20  # a_i
         self.nominal_amplitudes = 0.5  # R_i
+        
+        self.amplitudes = [0.5, 0.5]
         # Feel free to add more parameters (ex: MLR drive)
         # self.drive_mlr = ...
         # ...

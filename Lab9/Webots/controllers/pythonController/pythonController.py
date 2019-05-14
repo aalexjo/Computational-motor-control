@@ -57,7 +57,7 @@ def main():
     # Pause
     world.simulationSetMode(world.SIMULATION_MODE_PAUSE)
     pylog.info("Simulations complete")
-    world.simulationQuit(0)
+    #world.simulationQuit(0)
 
 
 if __name__ == '__main__':

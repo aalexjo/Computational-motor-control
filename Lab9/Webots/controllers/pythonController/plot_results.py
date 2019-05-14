@@ -9,19 +9,19 @@ from save_figures import save_figures
 from parse_args import save_plots
 
 
-def plot_positions(times, link_data):
+def plot_positions(times, link_data, i):
     """Plot positions"""
     for i, data in enumerate(link_data.T):
-        plt.plot(times, data, label=["x", "y", "z"][i])
+        plt.plot(times, data, label=[str(i)+"x", str(i)+"y", str(i)+"z"][i])
     plt.legend()
     plt.xlabel("Time [s]")
     plt.ylabel("Distance [m]")
     plt.grid(True)
 
 
-def plot_trajectory(link_data):
+def plot_trajectory(link_data, i):
     """Plot positions"""
-    plt.plot(link_data[:, 0], link_data[:, 2])
+    plt.plot(link_data[:, 0], link_data[:, 2], label=str(i))
     plt.xlabel("x [m]")
     plt.ylabel("z [m]")
     plt.axis("equal")
@@ -73,7 +73,7 @@ def plot_2d(results, labels, n_data=300, log=False, cmap=None):
     cbar.set_label(labels[2])
 
 
-def main(path, plot=True):
+def main(path, i, plot=True):
     """Main"""
     # Load data
     with np.load(path) as data:
@@ -85,10 +85,10 @@ def main(path, plot=True):
 
     # Plot data
     plt.figure("Positions")
-    plot_positions(times, link_data)
+    plot_positions(times, link_data,i)
 
     plt.figure("Trajectory")
-    plot_trajectory(link_data)
+    plot_trajectory(link_data,i)
     # Show plots
     if plot:
         plt.show()

@@ -34,7 +34,8 @@ def exercise_9b(world, timestep, reset):
             logs=path
             
         )
-        #plot_results.main(path)
+    for i in range(9):
+        plot_results.main("./logs/9b/simulation_{}.npz".format(i), i)
         
 
 

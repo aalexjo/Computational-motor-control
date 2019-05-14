@@ -80,8 +80,13 @@ class RobotParameters(dict):
 
     def set_nominal_amplitudes(self, parameters):
         """Set nominal amplitudes"""
-        self.nominal_amplitudes = parameters.nominal_amplitudes*np.ones(self.n_oscillators)
+        #self.nominal_amplitudes = parameters.nominal_amplitudes*np.ones(self.n_oscillators)
+        if parameters.amplitude_gradient == None: 
+            self.nominal_amplitudes = 0.5*np.ones(24)
+        if parameters.amplitude_gradient:             
+            r_start = parameters.amplitudes[0]
+            r_end = parameters.amplitudes[1]
+            self.nominal_amplitudes = np.linspace(r_start, r_end,len(self.nominal_amplitudes))
 
-        #self.nominal_amplitudes = parameters.nominal_amplitudes
-        #pylog.warning("Nominal amplitudes must be set")
+
 
