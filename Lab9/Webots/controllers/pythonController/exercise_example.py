@@ -16,11 +16,11 @@ def exercise_example(world, timestep, reset):
             amplitudes=[1, 2, 3],
             phase_lag=np.zeros(n_joints),
             turn=0,
-            # ...
         )
         for drive in np.linspace(1, 2, 2)
-        # for amplitudes in ...
+            
         # for ...
+        
     ]
 
     # Grid search

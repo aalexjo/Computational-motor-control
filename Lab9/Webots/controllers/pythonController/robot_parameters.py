@@ -40,21 +40,52 @@ class RobotParameters(dict):
 
     def set_frequencies(self, parameters):
         """Set frequencies"""
-        pylog.warning("Coupling weights must be set")
+        self.freqs = 5*np.ones(24)
+        #pylog.warning("Coupling weights must be set")
 
     def set_coupling_weights(self, parameters):
         """Set coupling weights"""
-        pylog.warning("Coupling weights must be set")
+        cw = np.zeros([24,24])
+        for i in range(parameters.n_body_joints*2):
+            for j in range(parameters.n_body_joints*2):
+                if j == i+1 or j == i-1 or j == i+10 or j == i-10:
+                    cw[i][j] = 10
+                    
+#        cw[20][1:10] = 1
+#        cw[21][7:10] = 1
+#        cw[22][11:20] = 1
+#        cw[23][17:20] = 1
+#        for i in range(20,24):
+#            for j in range(20,24):
+#                if j == i+1 or j == i-1 or j == i+2 or j == i-2: 
+#                    cw[i][j] = 10
+        self.coupling_weights = cw
+        #"pylog.warning("Coupling weights must be set")
 
     def set_phase_bias(self, parameters):
         """Set phase bias"""
-        pylog.warning("Phase bias must be set")
+        fb = np.zeros([24,24])
+        for i in range(parameters.n_body_joints*2):
+            for j in range(parameters.n_body_joints*2):
+                if j == i+1:
+                    fb[i][j] = -2*np.pi/8
+                elif j == i-1:
+                    fb[i][j] = 2*np.pi/8
+                elif j == i+10 or j == i-10:
+                    fb[i][j] = np.pi
+                
+        self.phase_bias = fb
+        #pylog.warning("Phase bias must be set")
 
     def set_amplitudes_rate(self, parameters):
         """Set amplitude rates"""
-        pylog.warning("Convergence rates must be set")
+        #self.rates = parameters.rates
+        #pylog.warning("Convergence rates must be set")
 
     def set_nominal_amplitudes(self, parameters):
         """Set nominal amplitudes"""
-        pylog.warning("Nominal amplitudes must be set")
+        self.nominal_amplitudes = 0.5*np.ones(24)
+
+        #self.nominal_amplitudes = parameters.nominal_amplitudes
+        #pylog.warning("Nominal amplitudes must be set")
 

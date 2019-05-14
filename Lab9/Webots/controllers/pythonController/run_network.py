@@ -17,7 +17,7 @@ def run_network(duration, update=False, drive=0):
     times = np.arange(0, duration, timestep)
     n_iterations = len(times)
     parameters = SimulationParameters(
-        drive=drive,
+        #drive=drive,
         amplitude_gradient=None,
         phase_lag=None,
         turn=None,
@@ -26,7 +26,40 @@ def run_network(duration, update=False, drive=0):
     osc_left = np.arange(10)
     osc_right = np.arange(10, 20)
     osc_legs = np.arange(20, 24)
+    
+    cw = np.zeros([24,24])
+    for i in range(network.parameters.n_body_joints*2):
+        for j in range(network.parameters.n_body_joints*2):
+            if j == i+1 or j == i-1 or j == i+10 or j == i-10:
+                cw[i][j] = 10
+                
+    cw[20][1:10] = 1
+    cw[21][7:10] = 1
+    cw[22][11:20] = 1
+    cw[23][17:20] = 1
+    for i in range(20,24):
+        for j in range(20,24):
+            if j == i+1 or j == i-1 or j == i+2 or j == i-2: 
+                cw[i][j] = 10
+    
+    network.parameters.freqs = 3*np.ones(24)
+    network.parameters.coupling_weights = cw
+    network.parameters.nominal_amplitudes = 0.2*np.ones(24)
+    #network.parameters.nominal_amplitudes[0] = 1
+    
+    fb = np.zeros([24,24])
+    for i in range(network.parameters.n_body_joints*2):
+        for j in range(network.parameters.n_body_joints*2):
+            if j == i+1:
+                fb[i][j] = -2*np.pi/8
+            elif j == i-1:
+                fb[i][j] = 2*np.pi/8
+            elif j == i+10 or j == i-10:
+                fb[i][j] = np.pi
+                
+    network.parameters.phase_bias = fb
 
+    
     # Logs
     phases_log = np.zeros([
         n_iterations,
@@ -71,9 +104,19 @@ def run_network(duration, update=False, drive=0):
         n_iterations,
         toc - tic
     ))
+    
+    plt.figure('phases')
+    plt.plot(phases_log)
+    
+    plt.figure('amplitude')
+    plt.plot(amplitudes_log)
+    
+    plt.figure('frequency')
+    plt.plot(freqs_log)
+    
+    plt.figure('out')
+    plt.plot(outputs_log)
 
-    # Implement plots of network results
-    pylog.warning("Implement plots")
 
 
 def main(plot):

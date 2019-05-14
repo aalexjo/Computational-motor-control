@@ -140,11 +140,11 @@ def exercise2():
     i = 0
     j = 0
     # Simulate the system for given time
-    for activation_max in np.arange(0, 1, 0.3):
+    for activation_max in np.arange(0, 1, 0.9):
         i = 0
-        for frequency in np.arange(1, 30, 4):
+        for frequency in np.arange(1, 10, 4):
             act1 = ((np.sin((time/t_max)*frequency*np.pi)+1)/2)*activation_max
-            act2 = ((np.sin((time/t_max)*frequency*np.pi + np.pi)+1)/2)*activation_max
+            act2 = ((np.sin((time/t_max)*frequency*np.pi + 1)+1)/2)*activation_max
             
             act1 = np.reshape(act1, (len(time),1)) 
             act2 = np.reshape(act2, (len(time),1)) 
