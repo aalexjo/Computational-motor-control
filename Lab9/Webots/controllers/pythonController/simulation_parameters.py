@@ -17,6 +17,7 @@ class SimulationParameters(dict):
         self.amplitude_gradient = None
         self.drive = 0
         self.turn = 0
+        self.walk = False
         
         self.freqs = 5  # f_i
         self.coupling_weight = 10  # w_ij
@@ -29,14 +30,14 @@ class SimulationParameters(dict):
         self.amplitudes = [0.5, 0.5]
         
         #----  drive parameters   ----
-        self.d_limit_body = [1.0, 5.0] #[ dlow, dhigh ] in arbitrary units
-        self.d_limit_limb = [1.0, 3.0] #
+        self.d_limit_body = np.array([0.5, 5.0]) #[ dlow, dhigh ] in arbitrary units
+        self.d_limit_limb = np.array([0.5, 3.0]) #
+            
+        self.freq_coef_body = np.array([0.6, .5]) # [C_v1, C_v0] in HZ
+        self.freq_coef_limb = np.array([0.6, 0.0])
         
-        self.freq_coef_body = [0.2, 0.3] # [C_v1, C_v0] in HZ
-        self.freq_coef_limb = [0.2, 0.0] 
-        
-        self.amp_coef_body = [0.065, 0.196] # [C_R1, C_R0] in radians
-        self.amp_coef_limb = [0.131, 0.131] 
+        self.amp_coef_body = 0.5*np.array([0.065, 0.196]) # [C_R1, C_R0] in radians
+        self.amp_coef_limb = 0.5*np.array([0.131, 0.131]) 
         
         # Feel free to add more parameters (ex: MLR drive)
         # self.drive_mlr = ...

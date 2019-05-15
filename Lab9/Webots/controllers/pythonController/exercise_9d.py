@@ -10,7 +10,7 @@ def exercise_9d1(world, timestep, reset):
 
     parameters = SimulationParameters(
         simulation_duration=10,
-        drive = 1.1,
+        drive = 4,
         turn = 0.,
     )
 

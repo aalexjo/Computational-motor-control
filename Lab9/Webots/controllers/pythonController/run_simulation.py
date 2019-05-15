@@ -22,13 +22,20 @@ def run_simulation(world, parameters, timestep, n_iterations, logs):
         logs=logs,
         parameters=parameters
     )
-
+    
+    switch = 1
     # Simulation
     iteration = 0
     while world.step(timestep) != -1:
         iteration += 1
         if iteration >= n_iterations:
             break
+        
+        if salamander.gps.getValues()[0] > switch:
+            salamander.network.parameters.walk = False
+            salamander.network.parameters.update(salamander.network.parameters.parameters)
+            switch = 10
+            print("doinit")
         salamander.step()
 
     # Log data

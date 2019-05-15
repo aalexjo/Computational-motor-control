@@ -23,8 +23,7 @@ def network_ode(_time, state, parameters):
         phase_dots[i] = 2*np.pi*parameters.freqs[i]
 
         for j in range(0,len(phases)):
-            phase_dots[i] += amplitudes[j]*parameters.coupling_weights[i][j]* \
-            np.sin(phases[j]-phases[i]-parameters.phase_bias[i][j])
+            phase_dots[i] += amplitudes[j] * parameters.coupling_weights[i,j] * np.sin(phases[j]-phases[i]-parameters.phase_bias[i,j])
             
         amp_dots[i] = parameters.rates[i]*(parameters.nominal_amplitudes[i]-amplitudes[i]) #Update amplitude diff_eq
     return np.concatenate([np.asarray(phase_dots), np.asarray(amp_dots)])
@@ -35,7 +34,7 @@ def motor_output(phases, amplitudes, parameters):
     n = parameters.n_body_joints
     
     q_body = amplitudes[:n]*(1+np.cos(phases[:n])) - amplitudes[n:n*2]*(1+np.cos(phases[n:n*2]))
-    q_limb = phases[2*n:]
+    q_limb = np.pi/2-phases[2*n:]
 
     return np.concatenate((q_body, q_limb))
 
@@ -105,7 +104,7 @@ class SalamanderNetwork(ODESolver):
         super(SalamanderNetwork, self).__init__(
             ode=network_ode,
             timestep=timestep,
-            solver=rk4  # Feel free to switch between Euler (euler) or
+            solver=euler  # Feel free to switch between Euler (euler) or
                         # Runge-Kutta (rk4) integration methods
         )
         # States

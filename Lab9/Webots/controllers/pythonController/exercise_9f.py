@@ -8,8 +8,9 @@ from simulation_parameters import SimulationParameters
 def exercise_9f(world, timestep, reset):
     """Exercise 9f"""
     parameters = SimulationParameters(
-        simulation_duration=10,
-        drive = 1.1,
+        simulation_duration=30,
+        drive = 2,
+        walk = True,
     )
 
     reset.reset()
