@@ -26,18 +26,18 @@ def network_ode(_time, state, parameters):
             phase_dots[i] += amplitudes[j]*parameters.coupling_weights[i][j]* \
             np.sin(phases[j]-phases[i]-parameters.phase_bias[i][j])
             
-        amp_dots[i] = parameters.nominal_amplitudes[i]-amplitudes[i] #Update amplitude diff_eq
-
+        amp_dots[i] = parameters.rates[i]*(parameters.nominal_amplitudes[i]-amplitudes[i]) #Update amplitude diff_eq
     return np.concatenate([np.asarray(phase_dots), np.asarray(amp_dots)])
 
 
-def motor_output(phases, amplitudes):
+def motor_output(phases, amplitudes, parameters):
     """Motor output"""
-    q = np.zeros(14)
-    for i in range(14):
-        q[i] = amplitudes[i]*(1+np.cos(phases[i])) - amplitudes[i + 10]*(1+np.cos(phases[i + 10]))
+    n = parameters.n_body_joints
     
-    return q
+    q_body = amplitudes[:n]*(1+np.cos(phases[:n])) - amplitudes[n:n*2]*(1+np.cos(phases[n:n*2]))
+    q_limb = phases[2*n:]
+
+    return np.concatenate((q_body, q_limb))
 
 
 class ODESolver(object):
@@ -121,5 +121,5 @@ class SalamanderNetwork(ODESolver):
 
     def get_motor_position_output(self):
         """Get motor position"""
-        return motor_output(self.state.phases, self.state.amplitudes)
+        return motor_output(self.state.phases, self.state.amplitudes, self.parameters)
 
