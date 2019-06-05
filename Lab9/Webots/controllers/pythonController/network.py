@@ -34,7 +34,10 @@ def motor_output(phases, amplitudes, parameters):
     n = parameters.n_body_joints
     
     q_body = amplitudes[:n]*(1+np.cos(phases[:n])) - amplitudes[n:n*2]*(1+np.cos(phases[n:n*2]))
-    q_limb = np.pi/2-phases[2*n:]
+    if np.amax(amplitudes[2*n:]) > 0.00001:
+        q_limb = np.pi/2-phases[2*n:]
+    else:
+        q_limb = np.zeros(parameters.n_legs_joints)
 
     return np.concatenate((q_body, q_limb))
 

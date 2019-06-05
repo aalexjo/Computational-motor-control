@@ -30,12 +30,18 @@ def run_simulation(world, parameters, timestep, n_iterations, logs):
         iteration += 1
         if iteration >= n_iterations:
             break
-        
-        if salamander.gps.getValues()[0] > switch:
+        """
+        if iteration == n_iterations//3:
+            #salamander.network.parameters.turn = 0.1 #9d1
+            salamander.network.parameters.drive = -3 
+            salamander.network.parameters.update(salamander.network.parameters.parameters)
+
+        if salamander.gps.getValues()[0] > switch: #used for 9f
             salamander.network.parameters.walk = False
             salamander.network.parameters.update(salamander.network.parameters.parameters)
             switch = 10
             print("doinit")
+        """
         salamander.step()
 
     # Log data

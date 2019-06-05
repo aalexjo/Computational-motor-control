@@ -9,25 +9,48 @@ from save_figures import save_figures
 from parse_args import save_plots
 
 
-def plot_positions(times, link_data, i):
+def plot_positions(times, link_data):
     """Plot positions"""
     for i, data in enumerate(link_data.T):
-        plt.plot(times, data, label=[str(i)+"x", str(i)+"y", str(i)+"z"][i])
+        plt.plot(times, data, label=["x", "y", "z"][i])
     plt.legend()
     plt.xlabel("Time [s]")
     plt.ylabel("Distance [m]")
     plt.grid(True)
 
 
-def plot_trajectory(link_data, i):
+def plot_trajectory(link_data, lab = None):
     """Plot positions"""
-    plt.plot(link_data[:, 0], link_data[:, 2], label=str(i))
+    plt.plot(link_data[:, 0], link_data[:, 2], label = lab)
+    plt.legend()
     plt.xlabel("x [m]")
     plt.ylabel("z [m]")
     plt.axis("equal")
     plt.grid(True)
 
+def plot_joint_output(times, joints_data, lab = None):
+    """Plot spine angles"""
 
+    #for i in range(10):
+    #    plt.plot(times[400:],joints_data[:,i,0][400:]-i*0., label = lab)
+    plt.plot(times,joints_data[:,0,0], label = lab)
+    plt.legend()
+    #plt.title('Spine angles')
+    plt.xlabel('time[s]')
+    plt.ylabel('angle[rad]')
+    
+def plot_velocity(timestep, times, link_data, lab = None):
+    plt.plot(times[1:], compute_velocity(timestep, link_data) ,label = lab)
+    plt.legend()
+    #plt.title('Salamander velocity')
+    plt.xlabel('time[s]')
+    plt.ylabel('Velocity[m/s]')
+
+def compute_velocity(timestep, link_data):
+    dist_array = link_data[1:]-link_data[:-1]
+    vel_array = np.linalg.norm(dist_array, axis=1)/timestep
+    return vel_array
+    
 def plot_2d(results, labels, n_data=300, log=False, cmap=None):
     """Plot result
 
@@ -73,29 +96,111 @@ def plot_2d(results, labels, n_data=300, log=False, cmap=None):
     cbar.set_label(labels[2])
 
 
-def main(path, i, plot=True):
+def main(plot=True):
     """Main"""
     # Load data
-    with np.load(path) as data:
+    with np.load('logs/example/simulation_0.npz') as data:
         timestep = float(data["timestep"])
         amplitude = data["amplitudes"]
+        phase_lag = data["phase_lag"]
         link_data = data["links"][:, 0, :]
         joints_data = data["joints"]
     times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
 
     # Plot data
     plt.figure("Positions")
-    plot_positions(times, link_data,i)
+    plot_positions(times, link_data)
 
-    plt.figure("Trajectory")
-    plot_trajectory(link_data,i)
     # Show plots
     if plot:
         plt.show()
     else:
         save_figures()
+        
+        
+def plot_9d1():
+    """custom function for plotting task 9d1"""
+    # Load data
+    with np.load('logs/9d1/simulation_0.npz') as data:
+        timestep = float(data["timestep"])
+        amplitude = data["amplitudes"]
+        #phase_lag = data["phase_lag"]
+        link_data = data["links"][:, 0, :]
+        joints_data = data["joints"]
+    times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
 
+    # Plot data
+    plt.figure("Trajectory")
+    plot_trajectory(link_data)
+    
+    plt.figure("joint angles")
+    plot_joint_output(times, joints_data)
+    
+    plot = True
+    # Show plots
+    if plot:
+        plt.show()
+    else:
+        save_figures()  
+
+def plot_9d2():
+    """custom function for plotting task 9d2"""
+    # Load data
+    with np.load('logs/9d2/simulation_0.npz') as data:
+        timestep = float(data["timestep"])
+        amplitude = data["amplitudes"]
+        #phase_lag = data["phase_lag"]
+        link_data = data["links"][:, 0, :]
+        joints_data = data["joints"]
+    times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
+
+    # Plot data
+    plt.figure("Trajectory")
+    plot_trajectory(link_data)
+    
+    plt.figure("joint angles")
+    plot_joint_output(times, joints_data)
+    
+    plot = True
+    # Show plots
+    if plot:
+        plt.show()
+    else:
+        save_figures()  
+        
+def plot_9f(timestep,num_plots, labels):
+    """custom function for plotting task 9d1"""
+    # Load data
+    avg_velocity = np.array([])
+    for i in range(num_plots):
+        with np.load('logs/9f/simulation_{}.npz'.format(i)) as data:
+            timestep = float(data["timestep"])
+            amplitude = data["amplitudes"]
+            #phase_lag = data["phase_lag"]
+            link_data = data["links"][:, 0, :]
+            joints_data = data["joints"]
+        times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
+    
+        # Plot data
+        plt.figure("Trajectory")
+        plot_trajectory(link_data, lab = labels[i])
+        
+        plt.figure("joint angles")
+        plot_joint_output(times, joints_data, lab = labels[i])
+        avg_velocity = np.append(avg_velocity, np.average(compute_velocity(timestep, link_data)))
+        
+    plt.figure("Avg Velocity")
+    plt.plot(labels, avg_velocity)
+        
+        
+    
+    plot = True
+    # Show plots
+    if plot:
+        plt.show()
+    else:
+        save_figures()  
 
 if __name__ == '__main__':
-    main(plot=not save_plots())
-
+    #main(plot=not save_plots())
+    plot_9f(0.01, 8, np.linspace(0, 2*np.pi, 8))

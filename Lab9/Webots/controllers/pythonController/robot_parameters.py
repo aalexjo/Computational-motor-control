@@ -28,6 +28,7 @@ class RobotParameters(dict):
         self.rates = np.zeros(self.n_oscillators)
         self.nominal_amplitudes = np.ones(self.n_oscillators)
         self.drive = 0
+        self.turn = parameters.turn
         if parameters.drive:
             self.drive = parameters.drive
         
@@ -62,10 +63,10 @@ class RobotParameters(dict):
     def set_frequencies(self, parameters):
         """Set frequencies"""
         if self.drive:
-            freqs_body_left   = self.freq_body*np.ones(self.n_body_joints)*(parameters.turn+1)
-            freqs_body_right  = self.freq_body*np.ones(self.n_body_joints)*(-parameters.turn+1)
-            freqs_limbs_left  = self.freq_limb*np.ones(self.n_legs_joints)*(parameters.turn+1)
-            freqs_limbs_right = self.freq_limb*np.ones(self.n_legs_joints)*(-parameters.turn+1)
+            freqs_body_left   = self.freq_body*np.ones(self.n_body_joints)*(self.turn+1)
+            freqs_body_right  = self.freq_body*np.ones(self.n_body_joints)*(-self.turn+1)
+            freqs_limbs_left  = self.freq_limb*np.ones(self.n_legs_joints)*(self.turn+1)
+            freqs_limbs_right = self.freq_limb*np.ones(self.n_legs_joints)*(-self.turn+1)
             self.freqs = np.concatenate((freqs_body_left, freqs_body_right, freqs_limbs_left, freqs_limbs_right))
         else:
             self.freqs = parameters.freqs*np.ones(self.n_oscillators)
@@ -87,19 +88,18 @@ class RobotParameters(dict):
         for i in range(parameters.n_body_joints*2,parameters.n_body_joints*2+parameters.n_legs_joints):
             for j in range(parameters.n_body_joints*2,parameters.n_body_joints*2+parameters.n_legs_joints):
                 if j == i+1 or j == i-1 or j == i+parameters.n_legs_joints/2 or j == i-parameters.n_legs_joints/2: 
-                    self.coupling_weights[i,j] = cw
-        if parameters.drive:
-            if parameters.drive < 0:
+                    self.coupling_weights[i,j] = cw_l
+        if self.drive:
+            if self.drive < 0:
                 self.coupling_weights = np.transpose(self.coupling_weights)
         np.core.arrayprint._line_width = 40
         np.set_printoptions(edgeitems=200, linewidth=200)
-        print(self.coupling_weights)
         
     def set_phase_bias(self, parameters):
         """Set phase bias"""
         fb_vertical = parameters.phase_bias_vertical
         fb_lateral = parameters.phase_bias_lateral
-        
+        fb_limb_spine = parameters.phase_bias_limb_spine
         for i in range(parameters.n_body_joints*2):
             for j in range(parameters.n_body_joints*2):
                 if j == i+1:
@@ -109,16 +109,16 @@ class RobotParameters(dict):
                 elif j == i+parameters.n_body_joints or j == i-parameters.n_body_joints:
                     self.phase_bias[i][j] = fb_lateral
                     
-        self.phase_bias[0:6,20] = 0
-        self.phase_bias[6:10,21] = 0
-        self.phase_bias[10:16,22] = 0
-        self.phase_bias[16:20,23] = 0
-        for i in range(parameters.n_body_joints*2,parameters.n_body_joints*2+parameters.n_legs_joints):
-            for j in range(parameters.n_body_joints*2,parameters.n_body_joints*2+parameters.n_legs_joints):
+        self.phase_bias[0:6,20] = fb_limb_spine
+        self.phase_bias[6:10,21] = fb_limb_spine
+        self.phase_bias[10:16,22] = fb_limb_spine
+        self.phase_bias[16:20,23] = fb_limb_spine
+        for i in range(parameters.n_body_joints*2, parameters.n_body_joints*2+parameters.n_legs_joints):
+            for j in range(parameters.n_body_joints*2, parameters.n_body_joints*2+parameters.n_legs_joints):
                 if j == i+1 or j == i-1 or j == i+parameters.n_legs_joints/2 or j == i-parameters.n_legs_joints/2: 
                     self.phase_bias[i][j] = fb_lateral
-        if parameters.drive:
-            if parameters.drive < 0:
+        if self.drive:
+            if self.drive < 0:
                 self.phase_bias = np.transpose(self.phase_bias)
                 
     def set_amplitudes_rate(self, parameters):
@@ -130,13 +130,14 @@ class RobotParameters(dict):
         """Set nominal amplitudes"""
         #self.nominal_amplitudes = parameters.nominal_amplitudes*np.ones(self.n_oscillators)
         if parameters.drive:
-            amp_body_left   = self.amp_body*np.ones(self.n_body_joints)*(parameters.turn+1)
-            amp_body_right  = self.amp_body*np.ones(self.n_body_joints)*(-parameters.turn+1)
-            amp_limbs_left  = self.amp_limb*np.ones(self.n_legs_joints)*(parameters.turn+1)
-            amp_limbs_right = self.amp_limb*np.ones(self.n_legs_joints)*(-parameters.turn+1)
+            amp_body_left   = self.amp_body*np.ones(self.n_body_joints)*(self.turn+1)
+            amp_body_right  = self.amp_body*np.ones(self.n_body_joints)*(-self.turn+1)
+            amp_limbs_left  = self.amp_limb*np.ones(self.n_legs_joints)*(self.turn+1)
+            amp_limbs_right = self.amp_limb*np.ones(self.n_legs_joints)*(-self.turn+1)
             self.nominal_amplitudes = np.concatenate((amp_body_left, amp_body_right, amp_limbs_left, amp_limbs_right))
         elif parameters.amplitude_gradient == None: 
-            self.nominal_amplitudes = parameters.nominal_amplitudes*np.ones(24)
+            self.nominal_amplitudes = np.concatenate((parameters.nominal_amplitudes*np.ones(self.n_oscillators_body),np.zeros(self.n_oscillators_legs)))
+            print(self.nominal_amplitudes)
         else:            
             r_start = parameters.amplitudes[0]
             r_end = parameters.amplitudes[1]

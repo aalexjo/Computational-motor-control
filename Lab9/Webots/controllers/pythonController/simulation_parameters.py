@@ -24,8 +24,9 @@ class SimulationParameters(dict):
         self.coupling_weight_limb = 30  # w_ij
         self.phase_bias_vertical = 2*np.pi/10  # theta_i
         self.phase_bias_lateral = np.pi
+        self.phase_bias_limb_spine = 0
         self.amplitudes_rate = 20  # a_i
-        self.nominal_amplitudes = 0.5  # R_i
+        self.nominal_amplitudes = 0.3  # R_i
         
         self.amplitudes = [0.5, 0.5]
         
@@ -39,6 +40,7 @@ class SimulationParameters(dict):
         self.amp_coef_body = 0.5*np.array([0.065, 0.196]) # [C_R1, C_R0] in radians
         self.amp_coef_limb = 0.5*np.array([0.131, 0.131]) 
         
+      
         # Feel free to add more parameters (ex: MLR drive)
         # self.drive_mlr = ...
         # ...
