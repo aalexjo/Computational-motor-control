@@ -1,5 +1,6 @@
 """Run simulation"""
 
+import numpy as np
 import cmc_pylog as pylog
 from cmc_robot import SalamanderCMC
 
@@ -24,6 +25,8 @@ def run_simulation(world, parameters, timestep, n_iterations, logs):
     )
     
     switch = 1
+    switch_T = np.inf
+    switched = False
     # Simulation
     iteration = 0
     while world.step(timestep) != -1:
@@ -35,13 +38,29 @@ def run_simulation(world, parameters, timestep, n_iterations, logs):
             #salamander.network.parameters.turn = 0.1 #9d1
             salamander.network.parameters.drive = -3 
             salamander.network.parameters.update(salamander.network.parameters.parameters)
-
-        if salamander.gps.getValues()[0] > switch: #used for 9f
+        if salamander.gps.getValues()[0] > switch and switched == False: #used for 9f
+            
             salamander.network.parameters.walk = False
             salamander.network.parameters.update(salamander.network.parameters.parameters)
-            switch = 10
-            print("doinit")
+            switch_T = iteration
+            print(switch_T)
+            switched = True
+        if salamander.gps.getValues()[0] < switch and switched == True:
+            salamander.network.parameters.walk = True
+            salamander.network.parameters.turn = 0
+            salamander.network.parameters.update(salamander.network.parameters.parameters)
+            swiched = True
+        if iteration == switch_T + 600:
+            print("turning")
+            salamander.network.parameters.turn = -0.11
+            salamander.network.parameters.update(salamander.network.parameters.parameters)
+        elif iteration == switch_T + 3500:
+            print("straight")
+            salamander.network.parameters.turn = 0
+            salamander.network.parameters.update(salamander.network.parameters.parameters)
         """
+
+        
         salamander.step()
 
     # Log data

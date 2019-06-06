@@ -26,7 +26,7 @@ class RobotParameters(dict):
         self.coupling_weights = np.zeros([self.n_oscillators,self.n_oscillators])
         self.phase_bias = np.zeros([self.n_oscillators, self.n_oscillators])
         self.rates = np.zeros(self.n_oscillators)
-        self.nominal_amplitudes = np.ones(self.n_oscillators)
+        self.nominal_amplitudes = np.zeros(self.n_oscillators)
         self.drive = 0
         self.turn = parameters.turn
         if parameters.drive:
@@ -46,16 +46,17 @@ class RobotParameters(dict):
     def calculate_drive(self, paramaters):
         if self.drive:  
             drive = np.abs(self.drive)
-            if drive > paramaters.d_limit_body[0] and drive < paramaters.d_limit_body[1]:
+            if drive >= paramaters.d_limit_body[0] and drive <= paramaters.d_limit_body[1]:
                 self.freq_body = paramaters.freq_coef_body[0]*drive + paramaters.freq_coef_body[1]
                 self.amp_body = paramaters.amp_coef_body[0]*drive + paramaters.amp_coef_body[1]
             else:
                 self.freq_body = 0
                 self.amp_body = 0
-            if drive > paramaters.d_limit_limb[0] and drive < paramaters.d_limit_limb[1] and self.walk == True:
+            if drive >= paramaters.d_limit_limb[0] and drive <= paramaters.d_limit_limb[1] and self.walk == True:
                 self.freq_limb = paramaters.freq_coef_limb[0]*drive + paramaters.freq_coef_limb[1]
                 self.amp_limb = paramaters.amp_coef_limb[0]*drive + paramaters.amp_coef_limb[1]
             else:
+                self.walking = False
                 self.freq_limb = 0
                 self.amp_limb = 0
                 
@@ -141,7 +142,9 @@ class RobotParameters(dict):
         else:            
             r_start = parameters.amplitudes[0]
             r_end = parameters.amplitudes[1]
-            self.nominal_amplitudes = np.linspace(r_start, r_end,len(self.nominal_amplitudes))
+            self.nominal_amplitudes[:self.n_body_joints] = np.linspace(r_start, r_end,(self.n_body_joints))
+            self.nominal_amplitudes[self.n_body_joints:2*self.n_body_joints] = np.linspace(r_start, r_end,(self.n_body_joints))
+
         
 
 

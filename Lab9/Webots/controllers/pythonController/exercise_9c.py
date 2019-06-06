@@ -1,20 +1,21 @@
 """Exercise 9c"""
 
 import numpy as np
+import plot_results
 from run_simulation import run_simulation
 from simulation_parameters import SimulationParameters
 
 
 def exercise_9c(world, timestep, reset):
-    Rhead = [0.1, 0.3, 0.6]
-    Rtail = [0.1, 0.3, 0.6]
+    Rhead = [0.1, 0.2, 0.3]
+    Rtail = [0.1, 0.2, 0.3]
     parameter_set = [
         SimulationParameters(
-            simulation_duration=4,
+            simulation_duration=10,
             #drive=drive,
             amplitude_gradient = True,
             amplitudes=[H, T],
-            freqs = 5,
+            freqs = 1,
             phase_bias_vertical = 2*np.pi/10,
             turn=0,
         )
@@ -25,7 +26,7 @@ def exercise_9c(world, timestep, reset):
     # Grid search
     for simulation_i, parameters in enumerate(parameter_set):
         reset.reset()
-        path = "./logs/9b/simulation_{}.npz".format(simulation_i)
+        path = "./logs/9c/simulation_{}.npz".format(simulation_i)
         run_simulation(
             world,
             parameters,
@@ -34,5 +35,4 @@ def exercise_9c(world, timestep, reset):
             logs=path
             
         )
-    for i in range(9):
-        plot_results.main("./logs/9b/simulation_{}.npz", i)
+    plot_results.plot_9c(len(parameter_set))

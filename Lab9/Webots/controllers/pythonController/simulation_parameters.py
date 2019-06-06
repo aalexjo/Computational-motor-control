@@ -34,10 +34,10 @@ class SimulationParameters(dict):
         self.d_limit_body = np.array([0.5, 5.0]) #[ dlow, dhigh ] in arbitrary units
         self.d_limit_limb = np.array([0.5, 3.0]) #
             
-        self.freq_coef_body = np.array([0.6, .5]) # [C_v1, C_v0] in HZ
-        self.freq_coef_limb = np.array([0.6, 0.0])
+        self.freq_coef_body = np.array([0.5, .5]) # [C_v1, C_v0] in HZ
+        self.freq_coef_limb = np.array([0.5, 0.0])
         
-        self.amp_coef_body = 0.5*np.array([0.065, 0.196]) # [C_R1, C_R0] in radians
+        self.amp_coef_body = np.array([0.035, 0.056]) # [C_R1, C_R0] in radians
         self.amp_coef_limb = 0.5*np.array([0.131, 0.131]) 
         
       

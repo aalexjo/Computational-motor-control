@@ -21,10 +21,14 @@ def network_ode(_time, state, parameters):
     for i in range(0,len(phases)): #For all parameters 
 
         phase_dots[i] = 2*np.pi*parameters.freqs[i]
-
+        
+        if i>= parameters.n_oscillators_body and parameters.walk == False: #this ensures that the libs go to the correct orientation while swimming
+            resting_angle = np.pi/2
+            phase_dots[i] += 10*np.sin(resting_angle - phases[i])
+            
         for j in range(0,len(phases)):
             phase_dots[i] += amplitudes[j] * parameters.coupling_weights[i,j] * np.sin(phases[j]-phases[i]-parameters.phase_bias[i,j])
-            
+        
         amp_dots[i] = parameters.rates[i]*(parameters.nominal_amplitudes[i]-amplitudes[i]) #Update amplitude diff_eq
     return np.concatenate([np.asarray(phase_dots), np.asarray(amp_dots)])
 
@@ -34,10 +38,8 @@ def motor_output(phases, amplitudes, parameters):
     n = parameters.n_body_joints
     
     q_body = amplitudes[:n]*(1+np.cos(phases[:n])) - amplitudes[n:n*2]*(1+np.cos(phases[n:n*2]))
-    if np.amax(amplitudes[2*n:]) > 0.00001:
-        q_limb = np.pi/2-phases[2*n:]
-    else:
-        q_limb = np.zeros(parameters.n_legs_joints)
+    #if np.amax(amplitudes[2*n:]) > 0.00001:
+    q_limb = np.pi/2 - phases[2*n:]
 
     return np.concatenate((q_body, q_limb))
 

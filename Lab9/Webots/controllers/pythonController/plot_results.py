@@ -31,9 +31,12 @@ def plot_trajectory(link_data, lab = None):
 def plot_joint_output(times, joints_data, lab = None):
     """Plot spine angles"""
 
-    #for i in range(10):
-    #    plt.plot(times[400:],joints_data[:,i,0][400:]-i*0., label = lab)
-    plt.plot(times,joints_data[:,0,0], label = lab)
+    for i in np.arange(0,10,2):
+        plt.plot(times[200:7000],joints_data[:,i,0][200:7000]-i*0.22, label = lab)
+    for i in range(10,12):
+        plt.plot(times[200:7000],0.5*np.cos(joints_data[:,i,0][200:7000])-i*1+7.5, label = lab)
+
+    #plt.plot(times,joints_data[:,0,0], label = lab)
     plt.legend()
     #plt.title('Spine angles')
     plt.xlabel('time[s]')
@@ -117,6 +120,29 @@ def main(plot=True):
     else:
         save_figures()
         
+       
+def plot_9c(num_plots):
+    """custom function for plotting task 9d1"""
+    # Load data
+    avg_velocity = np.array([])
+    for i in range(num_plots):
+        with np.load('logs/9c/simulation_{}.npz'.format(i)) as data:
+            timestep = float(data["timestep"])
+            amplitude = data["amplitudes"]
+            #phase_lag = data["phase_lag"]
+            link_data = data["links"][:, 0, :]
+            joints_data = data["joints"]
+        times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
+    
+        # Plot data
+        plt.figure("Trajectory")
+        plot_trajectory(link_data)
+    plot = True
+    # Show plots
+    if plot:
+        plt.show()
+    else:
+        save_figures()  
         
 def plot_9d1():
     """custom function for plotting task 9d1"""
@@ -191,7 +217,31 @@ def plot_9f(timestep,num_plots, labels):
         
     plt.figure("Avg Velocity")
     plt.plot(labels, avg_velocity)
-        
+
+def plot_9g():
+    """custom function for plotting task 9d2"""
+    # Load data
+    with np.load('logs/9g/simulation_0.npz') as data:
+        timestep = float(data["timestep"])
+        amplitude = data["amplitudes"]
+        #phase_lag = data["phase_lag"]
+        link_data = data["links"][:, 0, :]
+        joints_data = data["joints"]
+    times = np.arange(0, timestep*np.shape(link_data)[0], timestep)
+
+    # Plot data
+    plt.figure("Trajectory")
+    plot_trajectory(link_data)
+    
+    plt.figure("Joint angles")
+    plot_joint_output(times, joints_data)
+    
+    plot = True
+    # Show plots
+    if plot:
+        plt.show()
+    else:
+        save_figures() 
         
     
     plot = True
@@ -203,4 +253,4 @@ def plot_9f(timestep,num_plots, labels):
 
 if __name__ == '__main__':
     #main(plot=not save_plots())
-    plot_9f(0.01, 8, np.linspace(0, 2*np.pi, 8))
+    plot_9c(9)
